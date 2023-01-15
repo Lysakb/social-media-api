@@ -1,6 +1,6 @@
 const express = require("express");
 const bcrypt = require("bcrypt");
-const userSchema = require("../Models/user");
+const userSchema = require("../Model/user");
 
 const getAllUsers = async(req, res, next)=>{
     try {
