@@ -31,9 +31,7 @@ const userSignup = async(req, res)=>{
 
         })
         const saveduser = await user.save()
-        console.log(user)
-        console.log(saveduser)
-        console.log(userModel)
+        res.status(200).send(saveduser)
     }
     
     catch(error){
@@ -41,23 +39,26 @@ const userSignup = async(req, res)=>{
     }
 }
 
-const userLogin = async(req, res, next)=>{
-    const {email, password} = req.body;
-    try {
-        let existingUser = await userModel.findOne(email)
-    } catch (error) {
-        res.status(400).send(err)
-    }
+const userLogin = async(req, res)=>{
+    try{
+        const {email, password} = req.body;
+        
+        const existingUser = await userModel.findOne({email});
 
-    if (!existingUser) {
-        return res.status(400).send({message:"User not found, please signup!"})
-    }
-
-    const comparePassword = await bcrypt.compare(password, existingUser.password)
-        if (!comparePassword) {
-            return res.status(400).send("Incorrect password!")
+        if(!existingUser){
+            return res.status(400).send({message: "Please signup, user not found!"})
         }
-        return res.status(200).send("Login successsfull!")
+
+        const comparePassword = await bcrypt.compare(password, existingUser.password);
+
+        if(!comparePassword){
+            return res.status(400).send("Incorrect Password")
+        }
+
+        res.status(200).send("Login successful!")
+    }catch(error){
+        res.status(400).send(error)
+    }
 }
 
 module.exports = {getAllUsers, userSignup, userLogin}
