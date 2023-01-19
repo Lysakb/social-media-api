@@ -1,10 +1,12 @@
 const express = require("express");
 const bcrypt = require("bcrypt");
-const userSchema = require("../Model/user");
+const userModel = require("../Model/user");
 
 const getAllUsers = async(req, res, next)=>{
+    let user = {}
     try {
-        let user = await userSchema.find()
+        let user = await userModel.find()
+        res.status(200).send(user)
     } catch (error) {
         res.status(400).send(err)
     }
@@ -12,48 +14,37 @@ const getAllUsers = async(req, res, next)=>{
     if(!user){
         return res.status(400).send({message: "Please signup"})
     }
-    res.status(200).send({user})
+
 }
 
-const userSignup = async(req, res, next)=>{
-    const {username, email, password} = req.body;
-
-    try {
-        let existingUser = await userSchema.findOne({email});
-
-        res.status(200).send({message:"User exists please login"})
-
-    } catch (error) {
-        res.status(400).send(err.message)
-    }
-
-
-    try {
-        let user = await userSchema.create({
+const userSignup = async(req, res)=>{
+  
+    try{
+        const {username, email, password} = req.body;
+        console.log(username)
+        const salt = await bcrypt.genSalt(10);
+        const hashedpassword = await bcrypt.hash(password, salt)
+        const user = new userModel({
             username: username,
             email: email,
-            password: password
+            password: hashedpassword
+
         })
-
-        const hashPassword = await bcrypt.hash(password);
-
-        await user.save();
-
-        res.status(200).send({
-            message: "Signup successful",
-            user
-    })
-
-    } catch (error) {
-        res.status(400).send({message:"Please fill in the field"})
+        const saveduser = await user.save()
+        console.log(user)
+        console.log(saveduser)
+        console.log(userModel)
     }
-
+    
+    catch(error){
+        console.log(error)
+    }
 }
 
 const userLogin = async(req, res, next)=>{
     const {email, password} = req.body;
     try {
-        let existingUser = await userSchema.findOne(email)
+        let existingUser = await userModel.findOne(email)
     } catch (error) {
         res.status(400).send(err)
     }
