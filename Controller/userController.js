@@ -27,7 +27,8 @@ const userSignup = async(req, res)=>{
         const user = new userModel({
             username: username,
             email: email,
-            password: hashedpassword
+            password: hashedpassword,
+            blog: []
 
         })
         const saveduser = await user.save()
@@ -35,7 +36,7 @@ const userSignup = async(req, res)=>{
     }
     
     catch(error){
-        console.log(error)
+        res.status(400).send(error)
     }
 }
 

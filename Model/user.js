@@ -19,7 +19,13 @@ const userSchema = new Schema({
         type: String,
         required: true,
         minLength: [8, "length should not be less than 8 characters"]
-    }
+    },
+
+    blogs:[{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Blog",
+        required: true
+    }]
 })
 
 const userModel = mongoose.model("Users", userSchema)
