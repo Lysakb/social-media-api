@@ -34,6 +34,9 @@ const getAllBlogById = async(req, res, next)=>{
 const addBlog = async(req, res, next)=>{
     const {title, description, image, user} = req.body;
 
+    if(!title || !description || !image || !user){
+        return res.status(404).send("Fill appropriate fields!")
+    }
     try{
         const addBlog = await blogModel.create({
             title: title,
@@ -41,10 +44,7 @@ const addBlog = async(req, res, next)=>{
             image: image,
             user: user
         })
-            
-        if(!title || !description || !image || !user){
-            return res.status(404).send("Fill appropriate fields!")
-        }
+        //    await userModel.blog = addBlog.id 
             res.status(200).send(addBlog) 
         }catch(error){
             res.status(400).send(error)

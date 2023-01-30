@@ -1,6 +1,7 @@
 const express = require("express");
 const bcrypt = require("bcrypt");
 const userModel = require("../Model/user");
+const jwt = require("jsonwebtoken")
 
 const getAllUsers = async(req, res, next)=>{
     let user = {}
@@ -31,8 +32,20 @@ const userSignup = async(req, res)=>{
             blog: []
 
         })
-        const saveduser = await user.save()
-        res.status(200).send(saveduser)
+        
+        const oldUser = await userModel.findOne({email});
+
+        if(oldUser){
+            return res.status(409).send("User already exists, please Login!")
+        }
+
+        //create token
+        const token = jwt.sign({user_id : user._id, email}, process.env.TOKEN_KEY, {expiresIn: "1h"})
+
+        user.token = token;
+        const saveduser = await user.save();
+        res.status(200).send(saveduser);
+
     }
     
     catch(error){
