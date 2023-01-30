@@ -18,7 +18,7 @@ const userSchema = new Schema({
     password: {
         type: String,
         required: true,
-        minLength: [8, "length should not be less than 8 characters"]
+        minLength: 8, 
     },
 
     blogs:[{

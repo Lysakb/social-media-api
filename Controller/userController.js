@@ -38,11 +38,7 @@ const userSignup = async(req, res)=>{
         if(oldUser){
             return res.status(409).send("User already exists, please Login!")
         }
-
-        //create token
-        const token = jwt.sign({user_id : user._id, email}, process.env.TOKEN_KEY, {expiresIn: "1h"})
-
-        user.token = token;
+       
         const saveduser = await user.save();
         res.status(200).send(saveduser);
 
@@ -57,19 +53,30 @@ const userLogin = async(req, res)=>{
     try{
         const {email, password} = req.body;
         
-        const existingUser = await userModel.findOne({email});
+        const user = await userModel.findOne({email});
 
-        if(!existingUser){
+        if(!user){
             return res.status(400).send({message: "Please signup, user not found!"})
         }
 
-        const comparePassword = await bcrypt.compare(password, existingUser.password);
+        const comparePassword = await bcrypt.compare(password, user.password);
 
         if(!comparePassword){
             return res.status(400).send("Incorrect Password")
         }
 
-        res.status(200).send("Login successful!")
+        //create token
+
+        const userId = {
+            id: user._id,
+            email: user.email
+        }
+        const token = jwt.sign(userId, process.env.TOKEN_KEY, {expiresIn: '1h'} )
+
+        res.status(200).send({
+            message:"Login successful!",
+            token
+        })
     }catch(error){
         res.status(400).send(error)
     }

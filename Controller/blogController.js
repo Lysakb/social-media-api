@@ -32,9 +32,10 @@ const getAllBlogById = async(req, res, next)=>{
 }
 
 const addBlog = async(req, res, next)=>{
-    const {title, description, image, user} = req.body;
+    const {title, description, image} = req.body;
+    const user = req.user
 
-    if(!title || !description || !image || !user){
+    if(!title || !description || !image){
         return res.status(404).send("Fill appropriate fields!")
     }
     try{
@@ -42,9 +43,10 @@ const addBlog = async(req, res, next)=>{
             title: title,
             description: description,
             image: image,
-            user: user
+            user: user._id
         })
-        //    await userModel.blog = addBlog.id 
+            user.blogs = user.blogs.concat(addBlog._id)
+            await user.save()
             res.status(200).send(addBlog) 
         }catch(error){
             res.status(400).send(error)
