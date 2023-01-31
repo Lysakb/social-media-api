@@ -81,11 +81,25 @@ const updateBlog = async(req, res, next) =>{
 
 const deleteBlog = async(req, res, next)=>{
     const id = req.params.id;
+    const user = req.user;
 
     try{
-        const deleteBlog = await blogModel.findByIdAndDelete(id)
+        const blog = await blogModel.findById(req.params.id);
+        
+        if(user._id.toString() === blog.user.toString()){
+       
+        const deleteBlog =  await blogModel.findByIdAndDelete(req.params.id);
+       
+           const index = user.blogs.indexOf(req.params.id);
 
-        res.status(200).send("Deleted successfully")
+           if(index !== -1){
+               user.blogs.splice(index, 1)
+           
+           await user.save()
+           }
+        res.status(200).send("Deleted successfully!")
+        }
+        
     }catch(error){
         res.status(400).send(error)
     }
