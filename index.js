@@ -3,6 +3,7 @@ require("dotenv").config();
 const {connectToMongodb} = require("./database");
 const userRoute = require("./route/userRoute");
 const blogRoute = require("./route/blogRoute");
+const helmet = require('helmet');
 
 const app = express();
 const PORT = process.env.PORT;
@@ -10,6 +11,7 @@ const PORT = process.env.PORT;
 connectToMongodb()
 
 app.use(express.json());
+app.use(helmet());
 
 app.use("/user", userRoute);
 app.use("/blog", blogRoute);
